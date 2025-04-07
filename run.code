@@ -1,0 +1,87 @@
+#include <iostream>
+#include <cmath>
+#include <unordered_map>
+using namespace std;
+
+// Exponential Search
+int binarySearch(int arr[], int left, int right, int target) {
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (arr[mid] == target) return mid;
+        if (arr[mid] < target) left = mid + 1;
+        else right = mid - 1;
+    }
+    return -1;
+}
+
+int exponentialSearch(int arr[], int size, int target) {
+    if (arr[0] == target) return 0;
+
+    int i = 1;
+    while (i < size && arr[i] <= target) i *= 2;
+
+    return binarySearch(arr, i / 2, min(i, size - 1), target);
+}
+
+// Jump Search
+int jumpSearch(int arr[], int size, int target) {
+    int step = sqrt(size);
+    int prev = 0;
+
+    while (arr[min(step, size) - 1] < target) {
+        prev = step;
+        step += sqrt(size);
+        if (prev >= size) return -1;
+    }
+
+    for (int i = prev; i < min(step, size); i++) {
+        if (arr[i] == target) return i;
+    }
+    return -1;
+}
+
+// Hashing-based Search
+void insertToHash(unordered_map<int, int>& hashTable, int arr[], int size) {
+    for (int i = 0; i < size; i++) {
+        hashTable[arr[i]] = i; // Store element with its index
+    }
+}
+
+int hashingSearch(unordered_map<int, int>& hashTable, int target) {
+    if (hashTable.find(target) != hashTable.end()) return hashTable[target];
+    return -1;
+}
+
+int main() {
+    int arr[] = {1, 3, 5, 7, 9, 11, 13, 15, 17}; // Sorted array
+    int size = sizeof(arr) / sizeof(arr[0]);
+    int target;
+
+    cout << "Enter the number to search: ";
+    cin >> target;
+
+    // Exponential Search
+    int expResult = exponentialSearch(arr, size, target);
+    if (expResult != -1)
+        cout << "Exponential Search: Element found at index " << expResult << endl;
+    else
+        cout << "Exponential Search: Element not found" << endl;
+
+    // Jump Search
+    int jumpResult = jumpSearch(arr, size, target);
+    if (jumpResult != -1)
+        cout << "Jump Search: Element found at index " << jumpResult << endl;
+    else
+        cout << "Jump Search: Element not found" << endl;
+
+    // Hashing-based Search
+    unordered_map<int, int> hashTable;
+    insertToHash(hashTable, arr, size);
+    int hashResult = hashingSearch(hashTable, target);
+    if (hashResult != -1)
+        cout << "Hashing-based Search: Element found at index " << hashResult << endl;
+    else
+        cout << "Hashing-based Search: Element not found" << endl;
+
+    return 0;
+}
